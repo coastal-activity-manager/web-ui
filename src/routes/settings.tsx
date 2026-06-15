@@ -30,6 +30,7 @@ function emptyConstraint(type: ConstraintType): Constraint {
     case 'wind_dir': return { type, required: false, weight: 1, preferred: [], tolerance: 45 }
     case 'weather': return { type, required: false, weight: 1, ideal: ['clear', 'partly_cloudy'], acceptable: ['overcast'] }
     case 'tide_height': return { type, required: false, weight: 1, ideal_min: 0, ideal_max: 3, acceptable_min: 0, acceptable_max: 5 }
+    case 'temperature': return { type, required: false, weight: 1, ideal_min: 15, ideal_max: 25, acceptable_min: 10, acceptable_max: 30 }
   }
 }
 
@@ -305,6 +306,7 @@ function ActivityForm({ value, onChange, onSave, onCancel, saving }: {
               <SelectItem value="wind_dir">Wind Direction</SelectItem>
               <SelectItem value="weather">Weather</SelectItem>
               <SelectItem value="tide_height">Tide Height</SelectItem>
+              <SelectItem value="temperature">Temperature</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -354,7 +356,7 @@ function ConstraintEditor({ constraint: c, onChange, onRemove }: {
         </div>
       </div>
 
-      {(c.type === 'wind_speed' || c.type === 'tide_height') && (
+      {(c.type === 'wind_speed' || c.type === 'tide_height' || c.type === 'temperature') && (
         <WindSpeedOrTideFields c={c} onChange={onChange} />
       )}
 
@@ -371,7 +373,7 @@ function ConstraintEditor({ constraint: c, onChange, onRemove }: {
 
 function WindSpeedOrTideFields({ c, onChange }: { c: Constraint; onChange: (c: Constraint) => void }) {
   const isWind = c.type === 'wind_speed'
-  const unit = isWind ? 'kts' : 'm'
+  const unit = isWind ? 'kts' : c.type === 'temperature' ? '°C' : 'm'
 
   function toDisplay(ms: number | undefined) {
     return ms !== undefined ? (isWind ? msToKnots(ms) : ms) : 0
